@@ -1,0 +1,36 @@
+{% extends "transmittals/dashboard.html" %}
+{% block titulo %}Agregar Destinatario{% endblock %}
+{% block titulo_texto %}Agregar nuevo destinatario{% endblock %}
+{% block contenido %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title mb-4 text-center">Agregar nuevo destinatario</h3>
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        {{ form.nombre.label_tag }}
+                        {{ form.nombre }}
+                        {{ form.nombre.errors }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.correo.label_tag }}
+                        {{ form.correo }}
+                        {{ form.correo.errors }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.organizacion.label_tag }}
+                        {{ form.organizacion }}
+                        {{ form.organizacion.errors }}
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">Guardar</button>
+                        <a href="{% url 'lista_destinatarios' %}" class="btn btn-link">Volver a la lista</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

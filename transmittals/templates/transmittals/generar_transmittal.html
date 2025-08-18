@@ -1,0 +1,151 @@
+{% extends "transmittals/dashboard.html" %}
+{% block titulo %}Generar Transmittal{% endblock %}
+{% block contenido %}
+<h3>Completar Formulario</h3>
+<form method="POST" enctype="multipart/form-data" action="">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="proyecto" class="form-label">Código o Nombre de Proyecto</label>
+            <input type="text" class="form-control" id="proyecto" name="proyecto" required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="empresa_emisora" class="form-label">Empresa Emisora</label>
+            <input type="text" class="form-control" id="empresa_emisora" name="empresa_emisora" required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="empresa_receptora" class="form-label">Empresa Receptora</label>
+            <input type="text" class="form-control" id="empresa_receptora" name="empresa_receptora" required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="fecha_emision" class="form-label">Fecha de Emisión de Transmittal</label>
+            <input type="date" class="form-control" id="fecha_emision" name="fecha_emision" required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="codigo_transmittal" class="form-label">Código de Transmittal</label>
+            <input type="text" class="form-control" id="codigo_transmittal" name="codigo_transmittal" required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="observacion" class="form-label">Observación General</label>
+            <textarea class="form-control" id="observacion" name="observacion" rows="1"></textarea>
+        </div>
+        <!-- Nombre de quien envía -->
+        <div class="col-md-4 mb-3">
+            <label for="nombre_emisor" class="form-label">Nombre de quien envía</label>
+            <input type="text" class="form-control" id="nombre_emisor" name="nombre_emisor" required>
+        </div>
+        <!-- Cargo de quien envía -->
+        <div class="col-md-4 mb-3">
+            <label for="cargo_emisor" class="form-label">Cargo de quien envía</label>
+            <input type="text" class="form-control" id="cargo_emisor" name="cargo_emisor" required>
+        </div>
+        <!-- Correo de quien envía -->
+        <div class="col-md-4 mb-3">
+            <label for="correo_emisor" class="form-label">Correo de quien envía</label>
+            <input type="email" class="form-control" id="correo_emisor" name="correo_emisor" required>
+        </div>
+        <!-- Estatus de envío -->
+        <div class="col-md-4 mb-3">
+            <label for="estatus_envio" class="form-label">Estatus de envío</label>
+            <select class="form-select" id="estatus_envio" name="estatus_envio" required>
+                <option value="">Seleccione...</option>
+                <option value="Solicita Aprobación">Solicita Aprobación</option>
+                <option value="Requiere Revisión">Requiere Revisión</option>                
+                <option value="Requiere Respuesta">Requiere Respuesta</option>
+                <option value="Informativo">Informativo</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Destinatario -->
+    <hr>
+    <h5>Destinatario</h5>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label for="nombre_receptor" class="form-label">Nombre del destinatario</label>
+            <input type="text" class="form-control" id="nombre_receptor" name="nombre_receptor" required>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="cargo_receptor" class="form-label">Cargo del destinatario</label>
+            <input type="text" class="form-control" id="cargo_receptor" name="cargo_receptor" required>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="correo_receptor" class="form-label">Correo del destinatario</label>
+            <input type="email" class="form-control" id="correo_receptor" name="correo_receptor" required>
+        </div>
+    </div>
+
+    <hr>
+    <h5>Documentos a enviar</h5>
+    <div id="documentos-lista">
+        <div class="row mb-2 align-items-end documento-item">
+            <div class="col-md-2">
+                <label class="form-label">Código Documento</label>
+                <input type="text" class="form-control" name="codigo_documento[]" required>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Nombre Documento</label>
+                <input type="text" class="form-control" name="nombre_documento[]" required>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Especialidad</label>
+                <input type="text" class="form-control" name="especialidad[]" required>
+            </div>
+            <div class="col-md-1">
+                <label class="form-label">Revisión</label>
+                <input type="text" class="form-control" name="revision[]" required>
+            </div>
+            <div class="col-md-1">
+                <label class="form-label">Extensión</label>
+                <input type="text" class="form-control" name="extension[]" placeholder="Ej: pdf, docx" required>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Archivo</label>
+                <input type="file" class="form-control" name="archivo[]">
+            </div>
+            <div class="col-md-2 d-flex flex-column align-items-start">
+                <label class="form-label">&nbsp;</label>
+                <button type="button" class="btn btn-danger btn-sm eliminar-doc">Eliminar</button>
+            </div>
+            <div class="col-12 mt-1">
+                <label class="form-label">Comentario</label>
+                <textarea class="form-control" name="comentario[]" rows="1"></textarea>
+            </div>
+        </div>
+    </div>
+    <button type="button" class="btn btn-outline-secondary mb-3" id="agregar-doc">Agregar otro documento</button>
+    <br>
+    <button type="submit" class="btn btn-primary">Generar</button>
+</form>
+
+<script>
+function asignarEliminar() {
+    let botones = document.querySelectorAll('.eliminar-doc');
+    botones.forEach(function(btn) {
+        btn.onclick = function() {
+            // Solo elimina si hay más de un documento (para evitar quedarse sin ninguno)
+            let items = document.getElementsByClassName('documento-item');
+            if(items.length > 1) {
+                btn.closest('.documento-item').remove();
+            } else {
+                alert("Debe haber al menos un documento.");
+            }
+        }
+    });
+}
+
+// Clonar y agregar un bloque de documento
+document.getElementById('agregar-doc').addEventListener('click', function() {
+    let lista = document.getElementById('documentos-lista');
+    let items = lista.getElementsByClassName('documento-item');
+    let nuevo = items[0].cloneNode(true);
+    // Limpiar los valores de los campos clonados
+    nuevo.querySelectorAll('input, textarea').forEach(e => { e.value = ""; });
+    lista.appendChild(nuevo);
+    asignarEliminar();
+});
+
+// Asignar eventos al cargar la página
+asignarEliminar();
+</script>
+{% endblock %}

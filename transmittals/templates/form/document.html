@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title text-center">Registro de Documentos</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Campo Nombre -->
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" required>
+                        </div>
+                        
+                        <!-- Campo Fecha -->
+                        <div class="mb-3">
+                            <label for="fecha" class="form-label">Fecha</label>
+                            <input type="date" class="form-control" id="fecha" name="fecha" required>
+                        </div>
+                        
+                        <!-- Campo Revisión -->
+                        <div class="mb-3">
+                            <label for="revision" class="form-label">Revisión</label>
+                            <input type="text" class="form-control" id="revision" name="revision" required>
+                        </div>
+                        
+                        <!-- Campo Documento -->
+                        <div class="mb-4">
+                            <label for="documento" class="form-label">Documento</label>
+                            <input class="form-control" type="file" id="documento" name="documento" required>
+                            <div class="form-text">Formatos aceptados: PDF, DOC, DOCX</div>
+                        </div>
+                        
+                        <!-- Botón de envío -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Enviar Documento</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

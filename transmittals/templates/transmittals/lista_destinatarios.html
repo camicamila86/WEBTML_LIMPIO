@@ -1,0 +1,27 @@
+{% extends "transmittals/dashboard.html" %}
+{% block titulo_pagina %}Lista de Destinatarios{% endblock %}
+{% block titulo %}Lista de Destinatarios{% endblock %}
+
+{% block contenido %}
+    {% if es_control %}
+        <a href="{% url 'agregar_destinatario' %}" class="btn btn-success mb-3">Agregar nuevo destinatario</a>
+    {% endif %}
+    <ul class="list-group">
+        {% for destinatario in destinatarios %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>
+                    <strong>{{ destinatario.nombre }}</strong> ({{ destinatario.correo }})<br>
+                    <small>{{ destinatario.organizacion }}</small>
+                </span>
+                {% if es_control %}
+                    <span>
+                        <a href="{% url 'editar_destinatario' destinatario.id %}" class="btn btn-sm btn-primary">Editar</a>
+                        <a href="{% url 'eliminar_destinatario' destinatario.id %}" class="btn btn-sm btn-danger">Eliminar</a>
+                    </span>
+                {% endif %}
+            </li>
+        {% empty %}
+            <li class="list-group-item">No hay destinatarios registrados.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
