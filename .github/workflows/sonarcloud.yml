@@ -1,5 +1,4 @@
 name: CI - SonarCloud
-
 on:
   push:
     branches: [ "main" ]
@@ -11,22 +10,21 @@ jobs:
   build-and-analyze:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
 
+      # Si ya tienes sonar-project.properties, NO pases args aquí
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          # si NO tienes sonar-project.properties, pasa los args aquí:
-          args: >
-            -Dsonar.organization=TU_ORG
-            -Dsonar.projectKey=TU_ORG_WEBTML_LIMPIO
-            -Dsonar.sources=.
-            -Dsonar.exclusions=**/migrations/**,**/static/**,**/media/**,**/node_modules/**,**/.venv/**,**/venv/**,**/__pycache__/**
 
-    
+      - name: Quality Gate
+        uses: SonarSource/sonarqube-quality-gate-action@v1
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: https://sonarcloud.io
+        with:
+          scanMetadataReportFile: .scannerwork/report-task.txt
+
