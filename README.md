@@ -12,3 +12,4 @@
 5. Prueba en: http://127.0.0.1:8000/prueba/
 
 Estructura lista para trabajar en la app transmittals y crear tus propios modelos y vistas.
+.
