@@ -1,0 +1,43 @@
+name: CI - SonarCloud
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [ "main" ]
+
+jobs:
+  build-and-analyze:
+    runs-on: ubuntu-latest
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # lo creaste en el paso 2
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # lo inyecta GitHub automáticamente
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0         # necesario para análisis de PR y blame correcto
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      # Si tienes requirements.txt, se instalan; además pytest y cobertura
+      - name: Install deps & run tests
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install pytest pytest-cov
+          pytest --cov=. --cov-report=xml
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2
+
+      # Espera el resultado de la Quality Gate (pass/fail)
+      - name: Quality Gate
+        uses: SonarSource/sonarcloud-quality-gate-action@v1
+        env:
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
