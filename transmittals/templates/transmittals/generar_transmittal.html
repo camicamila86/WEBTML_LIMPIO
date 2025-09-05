@@ -29,35 +29,32 @@
             <label for="observacion" class="form-label">Observación General</label>
             <textarea class="form-control" id="observacion" name="observacion" rows="1"></textarea>
         </div>
-        <!-- Nombre de quien envía -->
+
         <div class="col-md-4 mb-3">
             <label for="nombre_emisor" class="form-label">Nombre de quien envía</label>
             <input type="text" class="form-control" id="nombre_emisor" name="nombre_emisor" required>
         </div>
-        <!-- Cargo de quien envía -->
         <div class="col-md-4 mb-3">
             <label for="cargo_emisor" class="form-label">Cargo de quien envía</label>
             <input type="text" class="form-control" id="cargo_emisor" name="cargo_emisor" required>
         </div>
-        <!-- Correo de quien envía -->
         <div class="col-md-4 mb-3">
             <label for="correo_emisor" class="form-label">Correo de quien envía</label>
             <input type="email" class="form-control" id="correo_emisor" name="correo_emisor" required>
         </div>
-        <!-- Estatus de envío -->
+
         <div class="col-md-4 mb-3">
             <label for="estatus_envio" class="form-label">Estatus de envío</label>
             <select class="form-select" id="estatus_envio" name="estatus_envio" required>
                 <option value="">Seleccione...</option>
                 <option value="Solicita Aprobación">Solicita Aprobación</option>
-                <option value="Requiere Revisión">Requiere Revisión</option>                
+                <option value="Requiere Revisión">Requiere Revisión</option>
                 <option value="Requiere Respuesta">Requiere Respuesta</option>
                 <option value="Informativo">Informativo</option>
             </select>
         </div>
     </div>
 
-    <!-- Destinatario -->
     <hr>
     <h5>Destinatario</h5>
     <div class="row">
@@ -77,75 +74,107 @@
 
     <hr>
     <h5>Documentos a enviar</h5>
+
     <div id="documentos-lista">
+        <!-- Fila base (índice 0). Los id/for se renumeran por JS al clonar/eliminar -->
         <div class="row mb-2 align-items-end documento-item">
             <div class="col-md-2">
-                <label class="form-label">Código Documento</label>
-                <input type="text" class="form-control" name="codigo_documento[]" required>
+                <label class="form-label" for="codigo_documento_0">Código Documento</label>
+                <input type="text" class="form-control" id="codigo_documento_0" name="codigo_documento[]" required>
             </div>
             <div class="col-md-2">
-                <label class="form-label">Nombre Documento</label>
-                <input type="text" class="form-control" name="nombre_documento[]" required>
+                <label class="form-label" for="nombre_documento_0">Nombre Documento</label>
+                <input type="text" class="form-control" id="nombre_documento_0" name="nombre_documento[]" required>
             </div>
             <div class="col-md-2">
-                <label class="form-label">Especialidad</label>
-                <input type="text" class="form-control" name="especialidad[]" required>
+                <label class="form-label" for="especialidad_0">Especialidad</label>
+                <input type="text" class="form-control" id="especialidad_0" name="especialidad[]" required>
             </div>
             <div class="col-md-1">
-                <label class="form-label">Revisión</label>
-                <input type="text" class="form-control" name="revision[]" required>
+                <label class="form-label" for="revision_0">Revisión</label>
+                <input type="text" class="form-control" id="revision_0" name="revision[]" required>
             </div>
             <div class="col-md-1">
-                <label class="form-label">Extensión</label>
-                <input type="text" class="form-control" name="extension[]" placeholder="Ej: pdf, docx" required>
+                <label class="form-label" for="extension_0">Extensión</label>
+                <input type="text" class="form-control" id="extension_0" name="extension[]" placeholder="Ej: pdf, docx" required>
             </div>
             <div class="col-md-2">
-                <label class="form-label">Archivo</label>
-                <input type="file" class="form-control" name="archivo[]">
+                <label class="form-label" for="archivo_0">Archivo</label>
+                <input type="file" class="form-control" id="archivo_0" name="archivo[]">
             </div>
             <div class="col-md-2 d-flex flex-column align-items-start">
-                <label class="form-label">&nbsp;</label>
+                <!-- NO usar <label> vacío: solo un separador visual -->
+                <span class="d-block mb-2" aria-hidden="true"></span>
                 <button type="button" class="btn btn-danger btn-sm eliminar-doc">Eliminar</button>
             </div>
             <div class="col-12 mt-1">
-                <label class="form-label">Comentario</label>
-                <textarea class="form-control" name="comentario[]" rows="1"></textarea>
+                <label class="form-label" for="comentario_0">Comentario</label>
+                <textarea class="form-control" id="comentario_0" name="comentario[]" rows="1"></textarea>
             </div>
         </div>
     </div>
+
     <button type="button" class="btn btn-outline-secondary mb-3" id="agregar-doc">Agregar otro documento</button>
     <br>
     <button type="submit" class="btn btn-primary">Generar</button>
 </form>
 
 <script>
-function asignarEliminar() {
-    let botones = document.querySelectorAll('.eliminar-doc');
-    botones.forEach(function(btn) {
-        btn.onclick = function() {
-            // Solo elimina si hay más de un documento (para evitar quedarse sin ninguno)
-            let items = document.getElementsByClassName('documento-item');
-            if(items.length > 1) {
-                btn.closest('.documento-item').remove();
-            } else {
-                alert("Debe haber al menos un documento.");
-            }
-        }
+function reindexItems() {
+  const items = document.querySelectorAll('.documento-item');
+  items.forEach((fila, i) => {
+    const map = [
+      ['codigo_documento', 'input[name="codigo_documento[]"]'],
+      ['nombre_documento', 'input[name="nombre_documento[]"]'],
+      ['especialidad',     'input[name="especialidad[]"]'],
+      ['revision',         'input[name="revision[]"]'],
+      ['extension',        'input[name="extension[]"]'],
+      ['archivo',          'input[name="archivo[]"]'],
+      ['comentario',       'textarea[name="comentario[]"]'],
+    ];
+    map.forEach(([base, sel]) => {
+      const ctrl = fila.querySelector(sel);
+      if (!ctrl) return;
+      const id = `${base}_${i}`;
+      ctrl.id = id;
+      const label = ctrl.parentElement.querySelector('label');
+      if (label) label.setAttribute('for', id);
     });
+  });
 }
 
-// Clonar y agregar un bloque de documento
+function asignarEliminar() {
+  document.querySelectorAll('.eliminar-doc').forEach(btn => {
+    btn.onclick = function() {
+      const items = document.getElementsByClassName('documento-item');
+      if (items.length > 1) {
+        btn.closest('.documento-item').remove();
+        reindexItems();
+      } else {
+        alert("Debe haber al menos un documento.");
+      }
+    };
+  });
+}
+
 document.getElementById('agregar-doc').addEventListener('click', function() {
-    let lista = document.getElementById('documentos-lista');
-    let items = lista.getElementsByClassName('documento-item');
-    let nuevo = items[0].cloneNode(true);
-    // Limpiar los valores de los campos clonados
-    nuevo.querySelectorAll('input, textarea').forEach(e => { e.value = ""; });
-    lista.appendChild(nuevo);
-    asignarEliminar();
+  const lista = document.getElementById('documentos-lista');
+  const base = lista.querySelector('.documento-item');
+  const nuevo = base.cloneNode(true);
+
+  // limpiar valores
+  nuevo.querySelectorAll('input[type="text"]').forEach(e => e.value = "");
+  nuevo.querySelectorAll('textarea').forEach(e => e.value = "");
+  const file = nuevo.querySelector('input[type="file"]');
+  if (file) file.value = "";
+
+  lista.appendChild(nuevo);
+  reindexItems();
+  asignarEliminar();
 });
 
-// Asignar eventos al cargar la página
+// Inicializar
+reindexItems();
 asignarEliminar();
 </script>
 {% endblock %}
