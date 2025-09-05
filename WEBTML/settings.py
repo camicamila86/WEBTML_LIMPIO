@@ -1,7 +1,17 @@
 
 from pathlib import Path
+import os
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = 'django-insecure-proyecto-limpio'
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Si ya tienes DEBUG definido, deja el tuyo; si no, esta línea lo mantiene en True para dev
+DEBUG = os.environ.get("DJANGO_DEBUG", "True") == "True"
+
+# En dev permite un valor de respaldo; en prod exige la variable
+if DEBUG:
+    SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-only-secret")
+else:
+    SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]  # KeyError si falta (correcto en prod)
 DEBUG = True
 ALLOWED_HOSTS = []
 INSTALLED_APPS = [
